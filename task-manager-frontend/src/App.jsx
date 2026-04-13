@@ -17,10 +17,8 @@ import {useState, useEffect} from 'react';
 
 function App()
 {
-  
   const[tasks, setTasks] = useState([]);
   const[addTitle, setAddTitle] = useState('');
-  const[updateTitle, setUpdateTitle] = useState('');
 
   
   // load tasks at opening website first time
@@ -29,7 +27,7 @@ function App()
     {
       let data = await fetch("http://localhost:3000/");
       data = await data.json();
-      setTasks([...data.result]);
+      setTasks(data.result);
     }
     loadTask();
   },[]);
@@ -51,14 +49,14 @@ function App()
         body: JSON.stringify({id:uniqueId,title:addTitle,date,completed:false})
       }); 
       data = await data.json();
-      setTasks([...data.result]);
+      setTasks(data.result);
       setAddTitle('');
     }
   }
 
 
   // for updating title
-  async function handleUpdate(id)
+  async function handleUpdate(id,updateTitle)
     {
         if(updateTitle)
         {
@@ -70,10 +68,7 @@ function App()
                 body: JSON.stringify({id:id, title:updateTitle})
             });
             data = await data.json();
-            // console.log(data);
-            data = data.result;
-            setTasks([...data]);
-            setUpdateTitle('');
+            setTasks(data.result);
         }
     }
 
@@ -83,13 +78,10 @@ function App()
     async function handleDelete(id)
   {
     let data = await fetch(`http://localhost:3000/delete/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      method: 'DELETE'
     });
     data = await data.json();
-    setTasks([...data.result]);
+    setTasks(data.result);
   }
   
 
@@ -105,7 +97,7 @@ function App()
         body: JSON.stringify({id:id, isComplete: isComplete})
     });
     data = await data.json();
-    setTasks([...data.result]);
+    setTasks(data.result);
   }
 
 
@@ -123,11 +115,10 @@ function App()
 
       <div className="task-section">
         {
+          tasks.length === 0?(<h3 className="task-heading">No any task yet.</h3>):
           tasks.map((t) => <Task 
           key={t.id} 
           task={t} 
-          updateTitle={updateTitle}
-          setUpdateTitle={setUpdateTitle}
           handleUpdate={handleUpdate}
           handleDelete={handleDelete}
           handleComplete={handleComplete}
