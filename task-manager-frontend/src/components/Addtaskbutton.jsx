@@ -4,12 +4,12 @@
 
 
 
-function Addtaskbutton({addTaskButton, setAddTaskButton})
+function Addtaskbutton({addTask})
 {
 
     return (
         <div className="add-task-btn">
-            <button onClick={() => setAddTaskButton(!addTaskButton)}>Add</button>
+            <button onClick={() => addTask()}>Add</button>
         </div>
     );
 }
