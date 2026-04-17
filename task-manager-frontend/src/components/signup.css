@@ -1,0 +1,104 @@
+/* SIGNUP */
+.signup-section{
+    background-color: rgba(0, 0, 0, 0.829);
+    height: 100vh;
+    padding-top: 20rem;
+}
+
+.signup-container{
+    max-width: 30rem;
+    margin: 0 auto;
+    padding: 2.4rem;
+    background-color: #1B1B1B;
+    border-radius: 1.6rem;
+}
+
+.signup-login-btn-container{
+    width: fit-content;
+    border: 1px solid #0C0C0C;
+    border-radius: 2rem;
+    padding: 2px;
+    background-color: #0C0C0C;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.signup-login-btn-container button{
+    font-family: "Roboto", sans-serif;
+    font-size: 1.4rem;
+    border-radius: 1.8rem;
+    border: none;
+    color: #ffffffc5;
+    font-weight: 500;
+    padding: 0.8rem 1.2rem;
+    letter-spacing: 0.1px;
+}
+
+.bg-cl-1{
+    background-color: #0c0c0c;
+}
+.bg-cl-2{
+    background-color: #2b282a;
+}
+
+
+.form-heading{
+    margin-top: 2rem;
+}
+.form-heading h2{
+  font-family: "Roboto", sans-serif;
+  color: #ffffffc5;
+  font-weight: 600;
+  font-size: 2.2rem;
+  letter-spacing: 0.2px;
+}
+
+.form-container{
+    margin-top: 2rem;
+}
+
+.name-container{
+    display: grid;
+    grid-template-columns: 0.5fr 0.5fr;
+    gap: 1.6rem;
+}
+.name-container div input{
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 0.8rem;
+    border: 1px solid #292929;
+    background-color: #292929;
+    font-family: "Roboto", sans-serif;
+    letter-spacing: 0.1px;
+    color: #ffffffd7;
+}
+
+.email-field, .password-field{
+    margin-top: 2rem;
+}
+.email-field input, .password-field input{
+    padding: 0.8rem;
+    border-radius: 0.8rem;
+    border: 1px solid #292929;
+    background-color: #292929;
+    width: 100%;
+    color: #ffffffd7;
+}
+
+
+.submit-btn{
+    margin-top: 2.4rem;
+}
+.submit-btn button{
+    width: 100%;
+    padding: 0.8rem 0.8rem;
+    border-radius: 0.8rem;
+    background-color: #ffffffc9;
+    border: 1px solid #ffffffc9;
+    font-family: "Roboto", sans-serif;
+    letter-spacing: 0.2px;
+    color: #333;
+    font-weight: 700;
+    font-size: 1.4rem;
+}

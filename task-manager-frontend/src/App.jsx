@@ -6,31 +6,50 @@
 
 
 
-import Addtaskinput from "./components/Addtaskinput";
-import Addtaskbutton from "./components/Addtaskbutton";
-import Task from "./components/Task";
 
 import {useState, useEffect} from 'react';
-
-
+import {Routes, Route, useNavigate} from 'react-router-dom';
+import Maintask from './components/Maintask';
+import Signup from './components/Signup';
 
 
 function App()
 {
   const[tasks, setTasks] = useState([]);
   const[addTitle, setAddTitle] = useState('');
+  const[email, setEmail] = useState('');
+  const navigate = useNavigate();
+
+
+
+  // checking Authenticated or not
+  useEffect(() => {
+    const getEmail = sessionStorage.getItem("email");
+    if(getEmail)
+    {
+      setEmail(getEmail);
+      navigate("/home");
+    }
+    else
+      navigate('/');
+  },[navigate, email]);
+
 
   
-  // load tasks at opening website first time
+  // load tasks if uses get authenticated
   useEffect(() => {
+
+    if(!email)
+      return;
+
     async function loadTask()
     {
-      let data = await fetch("http://localhost:3000/");
+      let data = await fetch(`http://localhost:3000/tasks/${email}`);
       data = await data.json();
       setTasks(data.result);
     }
-    loadTask();
-  },[]);
+      loadTask();
+  },[email]);
 
 
 
@@ -41,15 +60,15 @@ function App()
     {
       const uniqueId = Date.now().toString(36) + Math.random().toString(36).substring(2);
       const date = `${new Date().getDate()}/${new Date().getMonth()+1}/${new Date().getFullYear()}`
-    let data = await fetch("http://localhost:3000/add", {
+    let data = await fetch("http://localhost:3000/add/", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({id:uniqueId,title:addTitle,date,completed:false})
+        body: JSON.stringify({id:uniqueId,title:addTitle,date,completed:false,email})
       }); 
       data = await data.json();
-      setTasks(data.result);
+      setTasks([...tasks, data.result]);
       setAddTitle('');
     }
   }
@@ -65,7 +84,7 @@ function App()
                 headers: {
                     'Content-Type': "application/json"
                 },
-                body: JSON.stringify({id:id, title:updateTitle})
+                body: JSON.stringify({id:id, title:updateTitle, email: email})
             });
             data = await data.json();
             setTasks(data.result);
@@ -77,7 +96,7 @@ function App()
     // for deleting
     async function handleDelete(id)
   {
-    let data = await fetch(`http://localhost:3000/delete/${id}`, {
+    let data = await fetch(`http://localhost:3000/delete/${id}?email=${email}`, {
       method: 'DELETE'
     });
     data = await data.json();
@@ -94,7 +113,7 @@ function App()
         headers: {
             'Content-type': 'application/json'
         },
-        body: JSON.stringify({id:id, isComplete: isComplete})
+        body: JSON.stringify({id:id, isComplete: isComplete, email: email})
     });
     data = await data.json();
     setTasks(data.result);
@@ -102,31 +121,69 @@ function App()
 
 
 
+  // authentication
+  async function authentication(isSignup, firstName, lastName, email, password)
+  {
+    if(isSignup)
+    {
+      let data = await fetch("http://localhost:3000/signup", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({firstName, lastName, email, password})
+      });
+
+      data = await data.json();
+      if(!data.problem)
+      {
+        sessionStorage.setItem("email",email);
+        navigate("/home");
+      }
+    }
+    else
+    {
+      let data = await fetch("http://localhost:3000/signin", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({email, password})
+      });
+
+      data = await data.json();
+      if(!data.problem)
+      {
+        sessionStorage.setItem("email",email);
+        navigate("/home");
+      }
+    }
+  }
+
+
+  function handleLogout()
+  {
+    sessionStorage.removeItem("email");
+    setEmail('');
+  }
+
+
 
   return (
-    <div className="task-manager-container">
-
-      <h1>Task Manager</h1>
-
-      <div className="tm-inner-container-1">
-        <Addtaskinput addTitle={addTitle} setAddTitle={setAddTitle} />
-        <Addtaskbutton addTask={addTask} />
-      </div>
-
-      <div className="task-section">
-        {
-          tasks.length === 0?(<h3 className="task-heading">No any task yet.</h3>):
-          tasks.map((t) => <Task 
-          key={t.id} 
-          task={t} 
-          handleUpdate={handleUpdate}
-          handleDelete={handleDelete}
-          handleComplete={handleComplete}
-          />)
-        }
-      </div>
-
-    </div>
+    <Routes>
+      <Route path='/' element={<Signup authentication={authentication} />} />
+      <Route path='/home' element={<Maintask
+      addTitle={addTitle}
+      setAddTitle={setAddTitle}
+      addTask={addTask}
+      tasks={tasks}
+      handleUpdate={handleUpdate}
+      handleDelete={handleDelete}
+      handleComplete={handleComplete}
+      handleLogout={handleLogout}
+      />}
+       />
+    </Routes>
   );
 }
 

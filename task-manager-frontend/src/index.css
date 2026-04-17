@@ -140,3 +140,51 @@ html{
   border-bottom: 1px solid #666;
 }
 
+
+
+
+
+
+
+/* LOGOUT */
+.task-manager-container{
+  position: relative;
+}
+
+.abs-btn-task-manager{
+  font-family: "Roboto", sans-serif;
+  font-size: 1.4rem;
+  position: absolute;
+  right: 4rem;
+  background-color: green;
+  border: 1px solid green;
+  color: #ffffffef;
+  padding: 0.6rem 0.8rem;
+  letter-spacing: 0.2px;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transform: translateX(-50%);
+}
+
+
+
+
+@media(max-width: 573px)
+{
+  html{
+    font-size: 50%;
+  }
+  .abs-btn-task-manager{
+    right: 0;
+  }
+}
+
+
+
+/* 37.5% */
+@media(max-width: 303px)
+{
+  html{
+    font-size: 37.5%;
+  }
+}
