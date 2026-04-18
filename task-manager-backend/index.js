@@ -30,18 +30,7 @@ let users = [];
 
 
 
-app.get("/tasks/:email", async (req, res) => {
-    try
-    {
-        let task = await pool.query("SELECT * FROM tasks WHERE email = $1",[req.params.email]);
-        task = task.rows;
-        return res.json({result:task});
-    }
-    catch(err)
-    {
-        console.log(err);
-    }
-});
+
 
 
 app.post("/signup", async (req,res) => {
@@ -86,7 +75,21 @@ app.post("/signin", async (req,res) => {
 });
 
 
-app.post("/add", async (req, res) => {
+app.get("/tasks/:email", async (req, res) => {
+    try
+    {
+        let task = await pool.query("SELECT * FROM tasks WHERE email = $1",[req.params.email]);
+        task = task.rows;
+        return res.json({result:task});
+    }
+    catch(err)
+    {
+        console.log(err);
+    }
+});
+
+
+app.post("/tasks", async (req, res) => {
     const id = req.body.id;
     const title = req.body.title;
     const date = req.body.date;
@@ -107,7 +110,7 @@ app.post("/add", async (req, res) => {
 });
 
 
-app.patch("/update/title", async (req, res) => {
+app.patch("/tasks", async (req, res) => {
     const id = req.body.id;
     const title = req.body.title;
     const email = req.body.email;
@@ -127,7 +130,7 @@ app.patch("/update/title", async (req, res) => {
 
 
 
-app.delete("/delete/:id", async (req, res) => {
+app.delete("/tasks/:id", async (req, res) => {
     const id = req.params.id;
     const email = req.query.email;
 
@@ -145,7 +148,7 @@ app.delete("/delete/:id", async (req, res) => {
 });
 
 
-app.patch("/task/complete", async (req, res) => {
+app.patch("/tasks/complete", async (req, res) => {
     const id = req.body.id;
     const complete = req.body.isComplete;
     const email = req.body.email;

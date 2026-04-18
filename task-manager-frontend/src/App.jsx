@@ -61,7 +61,7 @@ function App()
     {
       const uniqueId = Date.now().toString(36) + Math.random().toString(36).substring(2);
       const date = `${new Date().getDate()}/${new Date().getMonth()+1}/${new Date().getFullYear()}`
-    let data = await fetch("http://localhost:3000/add/", {
+    let data = await fetch("http://localhost:3000/tasks", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -80,7 +80,7 @@ function App()
     {
         if(updateTitle)
         {
-            let data = await fetch("http://localhost:3000/update/title", {
+            let data = await fetch("http://localhost:3000/tasks", {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': "application/json"
@@ -97,7 +97,7 @@ function App()
     // for deleting
     async function handleDelete(id)
   {
-    let data = await fetch(`http://localhost:3000/delete/${id}?email=${email}`, {
+    let data = await fetch(`http://localhost:3000/tasks/${id}?email=${email}`, {
       method: 'DELETE'
     });
     data = await data.json();
@@ -109,7 +109,7 @@ function App()
   // for marking complete or incomplete
   async function handleComplete(id, isComplete)
   {
-    let data = await fetch("http://localhost:3000/task/complete", {
+    let data = await fetch("http://localhost:3000/tasks/complete", {
         method: "PATCH",
         headers: {
             'Content-type': 'application/json'
