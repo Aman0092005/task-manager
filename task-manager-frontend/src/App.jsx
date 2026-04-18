@@ -11,6 +11,9 @@ import {useState, useEffect} from 'react';
 import {Routes, Route, useNavigate} from 'react-router-dom';
 import Maintask from './components/Maintask';
 import Signup from './components/Signup';
+import ProtectedRoute from './components/Protectroute';
+
+
 
 
 function App()
@@ -30,9 +33,7 @@ function App()
       setEmail(getEmail);
       navigate("/home");
     }
-    else
-      navigate('/');
-  },[navigate, email]);
+  },[]);
 
 
   
@@ -68,7 +69,7 @@ function App()
         body: JSON.stringify({id:uniqueId,title:addTitle,date,completed:false,email})
       }); 
       data = await data.json();
-      setTasks([...tasks, data.result]);
+      setTasks((prev) => [...prev, data.result]);
       setAddTitle('');
     }
   }
@@ -138,6 +139,7 @@ function App()
       if(!data.problem)
       {
         sessionStorage.setItem("email",email);
+        setEmail(email);
         navigate("/home");
       }
     }
@@ -155,6 +157,7 @@ function App()
       if(!data.problem)
       {
         sessionStorage.setItem("email",email);
+        setEmail(email);
         navigate("/home");
       }
     }
@@ -172,16 +175,20 @@ function App()
   return (
     <Routes>
       <Route path='/' element={<Signup authentication={authentication} />} />
-      <Route path='/home' element={<Maintask
-      addTitle={addTitle}
-      setAddTitle={setAddTitle}
-      addTask={addTask}
-      tasks={tasks}
-      handleUpdate={handleUpdate}
-      handleDelete={handleDelete}
-      handleComplete={handleComplete}
-      handleLogout={handleLogout}
-      />}
+      <Route path='/home' element={
+        <ProtectedRoute>
+          <Maintask
+            addTitle={addTitle}
+            setAddTitle={setAddTitle}
+            addTask={addTask}
+            tasks={tasks}
+            handleUpdate={handleUpdate}
+            handleDelete={handleDelete}
+            handleComplete={handleComplete}
+            handleLogout={handleLogout}
+          />
+        </ProtectedRoute>
+    }
        />
     </Routes>
   );
