@@ -20,37 +20,63 @@ function App()
 {
   const[tasks, setTasks] = useState([]);
   const[addTitle, setAddTitle] = useState('');
-  const[email, setEmail] = useState('');
+
   const navigate = useNavigate();
+  const[jwtToken, setjwtToken] = useState(sessionStorage.getItem("token"));
 
 
 
   // checking Authenticated or not
   useEffect(() => {
-    const getEmail = sessionStorage.getItem("email");
-    if(getEmail)
+ 
+    if(jwtToken)
     {
-      setEmail(getEmail);
-      navigate("/home");
+      async function loadTask()
+      {
+        let data = await fetch(`http://localhost:3000/tasks`, {
+          headers: {
+          Authorization: `Bearer ${jwtToken}`
+        }
+        });
+
+        data = await data.json();
+        if(!data.problem)
+        {
+          setTasks(data.result);
+          // navigate('/home');
+        }
+        else
+        {
+          handleLogout();
+        }
+      }
+      loadTask();
     }
-  },[]);
+  },[jwtToken]);
 
 
   
   // load tasks if uses get authenticated
-  useEffect(() => {
+  // useEffect(() => {
 
-    if(!email)
-      return;
+  //   if(!email)
+  //     return;
 
-    async function loadTask()
-    {
-      let data = await fetch(`http://localhost:3000/tasks/${email}`);
-      data = await data.json();
-      setTasks(data.result);
-    }
-      loadTask();
-  },[email]);
+  //   async function loadTask()
+  //   {
+  //     let token = sessionStorage.getItem("token");
+      
+  //     let data = await fetch(`http://localhost:3000/tasks/${email}`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`
+  //       }
+  //     });
+
+  //     data = await data.json();
+  //     setTasks(data.result);
+  //   }
+  //     loadTask();
+  // },[email]);
 
 
 
@@ -59,18 +85,27 @@ function App()
   {
     if(addTitle)
     {
+      const token = sessionStorage.getItem("token");
       const uniqueId = Date.now().toString(36) + Math.random().toString(36).substring(2);
       const date = `${new Date().getDate()}/${new Date().getMonth()+1}/${new Date().getFullYear()}`
     let data = await fetch("http://localhost:3000/tasks", {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({id:uniqueId,title:addTitle,date,completed:false,email})
+        body: JSON.stringify({id:uniqueId,title:addTitle,date,completed:false})
       }); 
       data = await data.json();
+      if(!data.problem)
+      {
       setTasks((prev) => [...prev, data.result]);
       setAddTitle('');
+      }
+      else
+      {
+        handleLogout();
+      }
     }
   }
 
@@ -80,15 +115,25 @@ function App()
     {
         if(updateTitle)
         {
+            const token = sessionStorage.getItem("token");
+
             let data = await fetch("http://localhost:3000/tasks", {
                 method: 'PATCH',
                 headers: {
-                    'Content-Type': "application/json"
+                    'Content-Type': "application/json",
+                    Authorization: `Bearer ${token}`
                 },
-                body: JSON.stringify({id:id, title:updateTitle, email: email})
+                body: JSON.stringify({id:id, title:updateTitle})
             });
             data = await data.json();
-            setTasks(data.result);
+            if(!data.problem)
+            {
+              setTasks(data.result);
+            }
+            else
+            {
+              handleLogout();
+            }
         }
     }
 
@@ -97,11 +142,23 @@ function App()
     // for deleting
     async function handleDelete(id)
   {
-    let data = await fetch(`http://localhost:3000/tasks/${id}?email=${email}`, {
-      method: 'DELETE'
+    const token = sessionStorage.getItem("token");
+
+    let data = await fetch(`http://localhost:3000/tasks/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
     data = await data.json();
-    setTasks(data.result);
+    if(!data.problem)
+    {
+      setTasks(data.result);
+    }
+    else
+    {
+      handleLogout();
+    }
   }
   
 
@@ -109,15 +166,26 @@ function App()
   // for marking complete or incomplete
   async function handleComplete(id, isComplete)
   {
+    const token = sessionStorage.getItem("token");
+
     let data = await fetch("http://localhost:3000/tasks/complete", {
         method: "PATCH",
         headers: {
-            'Content-type': 'application/json'
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({id:id, isComplete: isComplete, email: email})
+        body: JSON.stringify({id:id, isComplete: isComplete})
     });
     data = await data.json();
-    setTasks(data.result);
+    if(!data.problem)
+    {
+      setTasks(data.result);
+    }
+    else
+    {
+      handleLogout();
+    }
+    
   }
 
 
@@ -138,8 +206,8 @@ function App()
       data = await data.json();
       if(!data.problem)
       {
-        sessionStorage.setItem("email",email);
-        setEmail(email);
+        sessionStorage.setItem("token", data.token);
+        setjwtToken(data.token);
         navigate("/home");
       }
     }
@@ -156,8 +224,8 @@ function App()
       data = await data.json();
       if(!data.problem)
       {
-        sessionStorage.setItem("email",email);
-        setEmail(email);
+        sessionStorage.setItem("token", data.token);
+        setjwtToken(data.token);
         navigate("/home");
       }
     }
@@ -166,8 +234,8 @@ function App()
 
   function handleLogout()
   {
-    sessionStorage.removeItem("email");
-    setEmail('');
+    sessionStorage.removeItem("token");
+    navigate("/");
   }
 
 

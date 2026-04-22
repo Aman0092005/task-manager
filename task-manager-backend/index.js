@@ -2,6 +2,7 @@ import express from "express";
 import http from "node:http";
 import cors from "cors";
 import {Pool} from "pg";
+import jwt from "jsonwebtoken";
 
 
 const app = express();
@@ -46,7 +47,10 @@ app.post("/signup", async (req,res) => {
             return res.json({problem: true});
 
         await pool.query("INSERT INTO users (first_name, last_name, email, password) VALUES ($1, $2, $3, $4)",[firstName, lastName, email, password]);
-        return res.json({problem: false});
+
+        // for JWT
+        const token = jwt.sign({email: email},'secret_key',{expiresIn:'1h'});
+        return res.json({problem: false, token: token});
     }
     catch(err)
     {
@@ -59,13 +63,19 @@ app.post("/signup", async (req,res) => {
 app.post("/signin", async (req,res) => {
     try
     {
-        let user = await pool.query("SELECT * FROM users WHERE email = $1",[req.body.email]);
+        const email = req.body.email;
+        const password = req.body.password;
+
+        let user = await pool.query("SELECT * FROM users WHERE email = $1",[email]);
         user = user.rows;
         if(user.length === 0)
             return res.json({problem: true});
-        if(user[0].password !== req.body.password)
+        if(user[0].password !== password)
             return res.json({problem: true});
-        return res.json({problem: false});
+
+        // for JWT
+        const token = jwt.sign({email: email},'secret_key',{expiresIn:'1h'});
+        return res.json({problem: false, token: token});
     }
     catch(err)
     {
@@ -75,12 +85,12 @@ app.post("/signin", async (req,res) => {
 });
 
 
-app.get("/tasks/:email", async (req, res) => {
+app.get("/tasks", jwtMiddleware, async (req, res) => {
     try
     {
-        let task = await pool.query("SELECT * FROM tasks WHERE email = $1",[req.params.email]);
+        let task = await pool.query("SELECT * FROM tasks WHERE email = $1",[req.email]);
         task = task.rows;
-        return res.json({result:task});
+        return res.json({result: task, problem: false});
     }
     catch(err)
     {
@@ -89,18 +99,18 @@ app.get("/tasks/:email", async (req, res) => {
 });
 
 
-app.post("/tasks", async (req, res) => {
+app.post("/tasks", jwtMiddleware, async (req, res) => {
     const id = req.body.id;
     const title = req.body.title;
     const date = req.body.date;
     const completed = req.body.completed;
-    const email = req.body.email;
+    const email = req.email;
     
     try
     {
         const newTask = await pool.query("INSERT INTO tasks VALUES($1, $2, $3, $4, $5) RETURNING *",[id,title,date,completed,email]);
         const task = newTask.rows;
-        return res.status(201).json({result: task[0]});
+        return res.status(201).json({result: task[0], problem: false});
     }
     catch(err)
     {
@@ -110,17 +120,17 @@ app.post("/tasks", async (req, res) => {
 });
 
 
-app.patch("/tasks", async (req, res) => {
+app.patch("/tasks", jwtMiddleware, async (req, res) => {
     const id = req.body.id;
     const title = req.body.title;
-    const email = req.body.email;
+    const email = req.email;
     
     try
     {
         await pool.query("UPDATE tasks SET title = $1 WHERE id = $2 AND email = $3",[title,id,email]);
         let task = await pool.query("SELECT * FROM tasks WHERE email = $1",[email]);
         task = task.rows;
-        return res.status(200).json({result:task});
+        return res.status(200).json({result: task, problem: false});
     }
     catch(err)
     {
@@ -130,16 +140,16 @@ app.patch("/tasks", async (req, res) => {
 
 
 
-app.delete("/tasks/:id", async (req, res) => {
+app.delete("/tasks/:id", jwtMiddleware, async (req, res) => {
     const id = req.params.id;
-    const email = req.query.email;
+    const email = req.email;
 
     try
     {
         await pool.query("DELETE FROM tasks WHERE id = $1 AND email = $2",[id,email]);
         let task = await pool.query("SELECT * FROM tasks WHERE email = $1",[email]);
         task = task.rows;
-        return res.status(200).json({result:task});
+        return res.status(200).json({result:task, problem: false});
     }
     catch(err)
     {
@@ -148,17 +158,17 @@ app.delete("/tasks/:id", async (req, res) => {
 });
 
 
-app.patch("/tasks/complete", async (req, res) => {
+app.patch("/tasks/complete", jwtMiddleware, async (req, res) => {
     const id = req.body.id;
     const complete = req.body.isComplete;
-    const email = req.body.email;
+    const email = req.email;
 
     try
     {
         await pool.query("UPDATE tasks SET completed = $1 WHERE id = $2 AND email = $3",[complete,id,email]);
         let task = await pool.query("SELECT * FROM tasks WHERE email = $1",[email]);
         task = task.rows;
-        return res.status(200).json({result:task});
+        return res.status(200).json({result:task, problem: false});
     }
     catch(err)
     {
@@ -169,3 +179,34 @@ app.patch("/tasks/complete", async (req, res) => {
 app.listen(PORT, "0.0.0.0", () => {
   console.log("Server running on port 3000");
 });
+
+
+
+
+
+
+
+// MIDDLEWARE
+
+function jwtMiddleware(req,res,next)
+{
+    const header = req.headers.authorization;
+
+    if(!header)
+        return res.status(401).json({problem: true});
+    const token = header.split(" ")[1];
+
+    if(!token)
+        return res.status(401).json({problem: true});
+
+    try{
+        const decoded = jwt.verify(token,"secret_key");
+        req.email = decoded.email; // contains email
+        next();
+    }
+    catch(err)
+    {
+        // console.log(err);
+        return res.status(401).json({problem: true});
+    }
+}

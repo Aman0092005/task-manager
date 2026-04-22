@@ -7,9 +7,9 @@ import {Navigate} from "react-router-dom";
 
 function ProtectedRoute({children})
 {
-    const email = sessionStorage.getItem('email');
+    const token = sessionStorage.getItem('token');
 
-    if(!email)
+    if(!token)
     {
         return <Navigate to="/" />
     }
