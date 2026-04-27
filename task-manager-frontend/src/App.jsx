@@ -24,6 +24,7 @@ function App()
   const navigate = useNavigate();
   const[jwtToken, setjwtToken] = useState(sessionStorage.getItem("token"));
 
+  const[isLoading, setIsLoading] = useState(false);
 
 
   // checking Authenticated or not
@@ -31,6 +32,8 @@ function App()
  
     if(jwtToken)
     {
+      setIsLoading(true);
+
       async function loadTask()
       {
         let data = await fetch(`http://localhost:3000/tasks`, {
@@ -44,13 +47,19 @@ function App()
         {
           setTasks(data.result);
           // navigate('/home');
+          setIsLoading(false);
         }
         else
         {
           handleLogout();
+          setIsLoading(false);
         }
       }
       loadTask();
+
+      // setTimeout(() => {
+      //   setIsLoading(false);
+      // },2000);
     }
   },[jwtToken]);
 
@@ -85,6 +94,7 @@ function App()
   {
     if(addTitle)
     {
+
       const token = sessionStorage.getItem("token");
       const uniqueId = Date.now().toString(36) + Math.random().toString(36).substring(2);
       const date = `${new Date().getDate()}/${new Date().getMonth()+1}/${new Date().getFullYear()}`
@@ -142,6 +152,7 @@ function App()
     // for deleting
     async function handleDelete(id)
   {
+
     const token = sessionStorage.getItem("token");
 
     let data = await fetch(`http://localhost:3000/tasks/${id}`, {
@@ -154,6 +165,7 @@ function App()
     if(!data.problem)
     {
       setTasks(data.result);
+      setIsLoading(false);
     }
     else
     {
@@ -166,6 +178,7 @@ function App()
   // for marking complete or incomplete
   async function handleComplete(id, isComplete)
   {
+
     const token = sessionStorage.getItem("token");
 
     let data = await fetch("http://localhost:3000/tasks/complete", {
@@ -254,6 +267,7 @@ function App()
             handleDelete={handleDelete}
             handleComplete={handleComplete}
             handleLogout={handleLogout}
+            isLoading={isLoading}
           />
         </ProtectedRoute>
     }

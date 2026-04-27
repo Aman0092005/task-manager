@@ -4,14 +4,15 @@
 import Addtaskinput from "./Addtaskinput";
 import Addtaskbutton from "./Addtaskbutton";
 import Task from "./Task";
+import Loading from "./Loading";
 
 
 
 
-
-function Maintask({addTitle, setAddTitle, addTask, tasks, handleUpdate, handleDelete, handleComplete, handleLogout})
+function Maintask({addTitle, setAddTitle, addTask, tasks, handleUpdate, handleDelete, handleComplete, handleLogout, isLoading})
 {
     return (
+      isLoading?<Loading/>:
       <div className="task-manager-container">
         <button className="abs-btn-task-manager" onClick={() => handleLogout()}>Logout</button>
 

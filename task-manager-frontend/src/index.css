@@ -10,6 +10,11 @@ html{
 }
 
 
+body{
+  position: relative;
+}
+
+
 
 
 
@@ -168,6 +173,29 @@ html{
 
 
 
+/* FOR LODAING  */
+.loading{
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.loading p{
+  font-family: "Roboto", sans-serif;
+  font-size: 2.4rem;
+  letter-spacing: 0.2px;
+  font-weight: 600;
+}
+
+/* .display-none{
+  display: none;
+}
+ */
+
+
+/* MEDIA QUERY */
 
 @media(max-width: 573px)
 {
