@@ -3,6 +3,7 @@ import http from "node:http";
 import cors from "cors";
 import {Pool} from "pg";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 
 const app = express();
@@ -46,7 +47,9 @@ app.post("/signup", async (req,res) => {
         if(user.length > 0)
             return res.json({problem: true});
 
-        await pool.query("INSERT INTO users (first_name, last_name, email, password) VALUES ($1, $2, $3, $4)",[firstName, lastName, email, password]);
+        // Password hashing
+        const hashPassword = await bcrypt.hash(password, 10);
+        await pool.query("INSERT INTO users (first_name, last_name, email, password) VALUES ($1, $2, $3, $4)",[firstName, lastName, email, hashPassword]);
 
         // for JWT
         const token = jwt.sign({email: email},'secret_key',{expiresIn:'1h'});
@@ -70,12 +73,17 @@ app.post("/signin", async (req,res) => {
         user = user.rows;
         if(user.length === 0)
             return res.json({problem: true});
-        if(user[0].password !== password)
-            return res.json({problem: true});
 
-        // for JWT
-        const token = jwt.sign({email: email},'secret_key',{expiresIn:'1h'});
-        return res.json({problem: false, token: token});
+        // Using bcrypt for checking passwords
+        const isMatched = await bcrypt.compare(password, user[0].password);
+        if(isMatched)
+        {
+            // for JWT
+            const token = jwt.sign({email: email},'secret_key',{expiresIn:'1h'});
+            return res.json({problem: false, token: token});
+        } else{
+            return res.json({problem: true});
+        }
     }
     catch(err)
     {

@@ -1,10 +1,3 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from './assets/vite.svg'
-// import heroImg from './assets/hero.png'
-// import './App.css'
-
-
 
 
 import {useState, useEffect} from 'react';
@@ -30,62 +23,32 @@ function App()
   // checking Authenticated or not
   useEffect(() => {
  
-    if(jwtToken)
-    {
-      setIsLoading(true);
-
-      async function loadTask()
-      {
-        let data = await fetch(`http://localhost:3000/tasks`, {
-          headers: {
-          Authorization: `Bearer ${jwtToken}`
-        }
-        });
-
-        data = await data.json();
-        if(!data.problem)
-        {
-          setTasks(data.result);
-          // navigate('/home');
-          setIsLoading(false);
-        }
-        else
-        {
-          handleLogout();
-          setIsLoading(false);
-        }
-      }
-      loadTask();
-
-      // setTimeout(() => {
-      //   setIsLoading(false);
-      // },2000);
-    }
-  },[jwtToken]);
-
-
-  
-  // load tasks if uses get authenticated
-  // useEffect(() => {
-
-  //   if(!email)
-  //     return;
-
-  //   async function loadTask()
-  //   {
-  //     let token = sessionStorage.getItem("token");
+    if(jwtToken){
       
-  //     let data = await fetch(`http://localhost:3000/tasks/${email}`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`
-  //       }
-  //     });
+      async function loadTask(){
+        try{
+          setIsLoading(true);
+          let data = await fetch(`http://localhost:3000/tasks`, {
+            headers: {
+            Authorization: `Bearer ${jwtToken}`
+          }
+          });
 
-  //     data = await data.json();
-  //     setTasks(data.result);
-  //   }
-  //     loadTask();
-  // },[email]);
+          data = await data.json();
+          if(!data.problem)
+            setTasks(data.result);
+          else
+            handleLogout();
+      } catch(err){
+          console.log(err);
+      } finally{
+        setIsLoading(false);
+      }
+
+    }
+    loadTask();
+  }
+},[jwtToken]);
 
 
 
