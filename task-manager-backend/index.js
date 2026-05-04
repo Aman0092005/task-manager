@@ -47,7 +47,7 @@ app.post("/signup", async (req,res) => {
         let user = await pool.query("SELECT email FROM users WHERE email = $1",[req.body.email]);
         user = user.rows;
         if(user.length > 0)
-            return res.json({problem: true});
+            return res.status(409).json({problem: true});
 
         // Password hashing
         const hashPassword = await bcrypt.hash(password, 10);
@@ -73,7 +73,7 @@ app.post("/signin", async (req,res) => {
         let user = await pool.query("SELECT * FROM users WHERE email = $1",[email]);
         user = user.rows;
         if(user.length === 0)
-            return res.json({problem: true});
+            return res.status(401).json({problem: true});
 
         // Using bcrypt for checking passwords
         const isMatched = await bcrypt.compare(password, user[0].password);
@@ -83,7 +83,7 @@ app.post("/signin", async (req,res) => {
             const token = jwt.sign({email: email}, process.env.JWT_SECRET,{expiresIn:'1h'});
             return res.json({problem: false, token: token});
         } else{
-            return res.json({problem: true});
+            return res.status(401).json({problem: true});
         }
     }
     catch(err)
