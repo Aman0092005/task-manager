@@ -27,8 +27,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
-let tasks = [];
-let users = [];
+
 
 
 
@@ -36,10 +35,8 @@ let users = [];
 
 
 app.post("/signup", async (req,res) => {
-    const firstName = req.body.firstName;
-    const lastName = req.body.lastName;
-    const email = req.body.email;
-    const password = req.body.password;
+
+    const {firstName, lastName, email, password} = req.body;
     try
     {
         let user = await pool.query("SELECT email FROM users WHERE email = $1",[req.body.email]);
@@ -66,8 +63,7 @@ app.post("/signup", async (req,res) => {
 app.post("/signin", async (req,res) => {
     try
     {
-        const email = req.body.email;
-        const password = req.body.password;
+        const {email, password} = req.body;
 
         let user = await pool.query("SELECT * FROM users WHERE email = $1",[email]);
         user = user.rows;
@@ -108,10 +104,8 @@ app.get("/tasks", jwtMiddleware, async (req, res) => {
 
 
 app.post("/tasks", jwtMiddleware, async (req, res) => {
-    const id = req.body.id;
-    const title = req.body.title;
-    const date = req.body.date;
-    const completed = req.body.completed;
+
+    const {id, title, date, completed} = req.body;
     const email = req.email;
     
     try
@@ -129,8 +123,8 @@ app.post("/tasks", jwtMiddleware, async (req, res) => {
 
 
 app.patch("/tasks", jwtMiddleware, async (req, res) => {
-    const id = req.body.id;
-    const title = req.body.title;
+    
+    const {id, title} = req.body;
     const email = req.email;
     
     try
@@ -167,8 +161,8 @@ app.delete("/tasks/:id", jwtMiddleware, async (req, res) => {
 
 
 app.patch("/tasks/complete", jwtMiddleware, async (req, res) => {
-    const id = req.body.id;
-    const complete = req.body.isComplete;
+    
+    const {id, isComplete: complete} = req.body;
     const email = req.email;
 
     try

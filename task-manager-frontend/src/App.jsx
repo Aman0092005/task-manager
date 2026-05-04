@@ -72,8 +72,9 @@ function App()
       data = await data.json();
       if(!data.problem)
       {
-      setTasks((prev) => [...prev, data.result]);
-      setAddTitle('');
+        data.result.createdate = data.result.createdate.slice(0,10);
+        setTasks((prev) => [...prev, data.result]);
+        setAddTitle('');
       }
       else
       {
@@ -101,6 +102,10 @@ function App()
             data = await data.json();
             if(!data.problem)
             {
+              for(let i=0;i<data.result.length;i++)
+              {
+                data.result[i].createdate = data.result[i].createdate.slice(0,10);
+              }
               setTasks(data.result);
             }
             else
@@ -115,7 +120,6 @@ function App()
     // for deleting
     async function handleDelete(id)
   {
-
     const token = sessionStorage.getItem("token");
 
     let data = await fetch(`http://localhost:3000/tasks/${id}`, {
@@ -127,8 +131,11 @@ function App()
     data = await data.json();
     if(!data.problem)
     {
+      for(let i=0;i<data.result.length;i++)
+      {
+        data.result[i].createdate = data.result[i].createdate.slice(0,10);
+      }
       setTasks(data.result);
-      setIsLoading(false);
     }
     else
     {
@@ -155,6 +162,10 @@ function App()
     data = await data.json();
     if(!data.problem)
     {
+      for(let i=0;i<data.result.length;i++)
+      {
+        data.result[i].createdate = data.result[i].createdate.slice(0,10);
+      }
       setTasks(data.result);
     }
     else
