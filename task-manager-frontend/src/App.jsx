@@ -36,7 +36,13 @@ function App()
 
           data = await data.json();
           if(!data.problem)
-            setTasks(data.result);
+          {
+            for(let i=0;i<data.result.length;i++)
+              {
+                data.result[i].createdate = data.result[i].createdate.slice(0,10);
+              }
+              setTasks(data.result);
+          }
           else
             handleLogout();
       } catch(err){

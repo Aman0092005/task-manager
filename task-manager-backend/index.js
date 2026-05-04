@@ -5,6 +5,11 @@ import {Pool} from "pg";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
+import dotenv from "dotenv";
+
+dotenv.config();
+
+
 
 const app = express();
 
@@ -49,7 +54,7 @@ app.post("/signup", async (req,res) => {
         await pool.query("INSERT INTO users (first_name, last_name, email, password) VALUES ($1, $2, $3, $4)",[firstName, lastName, email, hashPassword]);
 
         // for JWT
-        const token = jwt.sign({email: email},'secret_key',{expiresIn:'1h'});
+        const token = jwt.sign({email: email},process.env.JWT_SECRET,{expiresIn:'1h'});
         return res.json({problem: false, token: token});
     }
     catch(err)
@@ -75,7 +80,7 @@ app.post("/signin", async (req,res) => {
         if(isMatched)
         {
             // for JWT
-            const token = jwt.sign({email: email},'secret_key',{expiresIn:'1h'});
+            const token = jwt.sign({email: email}, process.env.JWT_SECRET,{expiresIn:'1h'});
             return res.json({problem: false, token: token});
         } else{
             return res.json({problem: true});
@@ -202,7 +207,7 @@ function jwtMiddleware(req,res,next)
         return res.status(401).json({problem: true});
 
     try{
-        const decoded = jwt.verify(token,"secret_key");
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.email = decoded.email; // contains email
         next();
     }
