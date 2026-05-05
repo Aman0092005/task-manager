@@ -2,7 +2,7 @@
 
 
 // const API_URL = "http://localhost:3000";
-const API_URL = "http://172.20.10.7:3000";
+const API_URL = "https://task-manager-3-n1u2.onrender.com";
 
 
 
