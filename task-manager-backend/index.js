@@ -60,7 +60,7 @@ app.post("/signup", async (req,res) => {
     catch(err)
     {
         console.log(err);
-        return res.json({problem:true});
+        return res.status(409).json({problem:true});
     }
 });
 

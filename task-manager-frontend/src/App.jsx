@@ -5,8 +5,18 @@ import {Routes, Route, useNavigate} from 'react-router-dom';
 import Maintask from './components/Maintask';
 import Signup from './components/Signup';
 import ProtectedRoute from './components/Protectroute';
-import { apiFetch } from './api/api';
+import { apiFetch, auth } from './api/api';
 
+
+
+// Temporary function
+function modifyDate(data)
+{
+  for(let i=0;i<data.result.length;i++)
+    {
+      data.result[i].createdate = data.result[i].createdate.slice(0,10);
+    }
+}
 
 
 
@@ -33,11 +43,10 @@ function App()
           let data = await apiFetch("/tasks", "GET");
           if(!data.problem)
           {
-            for(let i=0;i<data.result.length;i++)
-              {
-                data.result[i].createdate = data.result[i].createdate.slice(0,10);
-              }
-              setTasks(data.result);
+            // Temporary
+            modifyDate(data);
+
+            setTasks(data.result);
           }
           else
             handleLogout();
@@ -67,7 +76,9 @@ function App()
       let data = await apiFetch("/tasks", "POST", {id:uniqueId, title: addTitle, date, completed:false});
       if(!data.problem)
       {
+        // Temporary 
         data.result.createdate = data.result.createdate.slice(0,10);
+
         setTasks((prev) => [...prev, data.result]);
         setAddTitle('');
       }
@@ -89,10 +100,9 @@ function App()
             let data = await apiFetch("/tasks", "PATCH", {id, title: updateTitle});
             if(!data.problem)
             {
-              for(let i=0;i<data.result.length;i++)
-              {
-                data.result[i].createdate = data.result[i].createdate.slice(0,10);
-              }
+              // Temporary
+              modifyDate(data)
+
               setTasks(data.result);
             }
             else
@@ -112,10 +122,9 @@ function App()
     let data = await apiFetch(`/tasks/${id}`, "DELETE");
     if(!data.problem)
     {
-      for(let i=0;i<data.result.length;i++)
-      {
-        data.result[i].createdate = data.result[i].createdate.slice(0,10);
-      }
+      // Temporary
+      modifyDate(data)
+
       setTasks(data.result);
     }
     else
@@ -135,10 +144,9 @@ function App()
     let data = await apiFetch("/tasks/complete", "PATCH", {id, isComplete});
     if(!data.problem)
     {
-      for(let i=0;i<data.result.length;i++)
-      {
-        data.result[i].createdate = data.result[i].createdate.slice(0,10);
-      }
+      // Temporary
+      modifyDate(data)
+
       setTasks(data.result);
     }
     else
@@ -155,15 +163,7 @@ function App()
   {
     if(isSignup)
     {
-      let data = await fetch("http://localhost:3000/signup", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({firstName, lastName, email, password})
-      });
-
-      data = await data.json();
+      let data = await auth("/signup", {firstName, lastName, email, password});
       if(!data.problem)
       {
         sessionStorage.setItem("token", data.token);
@@ -173,15 +173,7 @@ function App()
     }
     else
     {
-      let data = await fetch("http://localhost:3000/signin", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({email, password})
-      });
-
-      data = await data.json();
+      let data = await auth("/signin", {email, password});
       if(!data.problem)
       {
         sessionStorage.setItem("token", data.token);

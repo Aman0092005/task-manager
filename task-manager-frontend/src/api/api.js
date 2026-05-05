@@ -31,3 +31,21 @@ export async function apiFetch(endpoint, method, body=null)
     }
     return res.json();
 }
+
+
+
+
+
+
+export async function auth(endpoint, body)
+{
+    const res = await fetch(`${API_URL}${endpoint}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body) 
+    });
+
+    return res.json();
+}
