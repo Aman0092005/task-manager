@@ -5,7 +5,7 @@ import {Pool} from "pg";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-import dotenv from "dotenv";
+// import dotenv from "dotenv";
 
 dotenv.config();
 
