@@ -39,13 +39,13 @@ git clone <your-repo-url>
 ```
 cd task-manager
 
-* FRONTEND
+FRONTEND:
 cd task-manager-frontend
 npm install
 npm run dev
 
 
-*BACKEND
+BACKEND:
 cd task-manager-backend
 npm install
 node index.js
@@ -59,13 +59,9 @@ node index.js
 * Frontend: http://localhost:5173
 * Backend: http://localhost:3000
 
----
 
 
 
-
-
----
 
 ---
 
