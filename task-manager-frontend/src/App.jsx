@@ -4,7 +4,7 @@ import {useState, useEffect} from 'react';
 import {Routes, Route, useNavigate} from 'react-router-dom';
 import Maintask from './components/Maintask';
 import Signup from './components/Signup';
-import ProtectedRoute from './components/Protectroute';
+import ProtectedRoute from './components/Protectedroute';
 import { apiFetch, auth } from './api/api';
 
 
