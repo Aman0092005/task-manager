@@ -161,25 +161,26 @@ function App()
   // authentication
   async function authentication(isSignup, firstName, lastName, email, password)
   {
-    if(isSignup)
-    {
-      let data = await auth("/signup", {firstName, lastName, email, password});
+    const body = isSignup?{firstName, lastName, email, password}: {email, password};
+    const endpoint = isSignup?"/signup": "/signin";
+
+    try{
+      let data = await auth(endpoint, body);
+
+      if(!data)
+        return;
+
       if(!data.problem)
       {
         sessionStorage.setItem("token", data.token);
         setjwtToken(data.token);
         navigate("/home");
+      } else{
+        console.log("Invalid credentials")
       }
-    }
-    else
+    } catch(err)
     {
-      let data = await auth("/signin", {email, password});
-      if(!data.problem)
-      {
-        sessionStorage.setItem("token", data.token);
-        setjwtToken(data.token);
-        navigate("/home");
-      }
+      console.log(err);
     }
   }
 

@@ -202,9 +202,9 @@ body{
 
 @media(max-width: 573px)
 {
-  html{
+  /* html{
     font-size: 50%;
-  }
+  } */
   .abs-btn-task-manager{
     right: 0;
   }
@@ -214,14 +214,22 @@ body{
 }
 
 
+@media(max-width: 442px)
+{
+  .task-time{
+    display: none;
+  }
+}
+
+
 
 /* 37.5% */
 @media(max-width: 303px)
 {
-  html{
+  /* html{
     font-size: 37.5%;
   }
   .task-time p{
     font-size: 0.8rem;
-  }
+  } */
 }

@@ -1,6 +1,6 @@
 # 📝 Task Manager App
 
-A full-stack Task Manager application built with a React frontend and Node.js backend, containerized using Docker.
+A full-stack Task Manager application built with a React frontend and Node.js backend.
 
 ---
 
@@ -8,7 +8,6 @@ A full-stack Task Manager application built with a React frontend and Node.js ba
 
 * Frontend: React (Vite)
 * Backend: Node.js (Express)
-* Containerization: Docker & Docker Compose
 
 ---
 
@@ -19,18 +18,18 @@ project-root/
 │
 ├── task-manager-frontend/
 ├── task-manager-backend/
-└── docker-compose.yml
+
 ```
 
 ---
 
-## ⚙️ Getting Started (Docker)
+## ⚙️ Getting Started
 
 ### 1. Clone the repository
 
 ```
 git clone <your-repo-url>
-cd <your-project-folder>
+
 ```
 
 ---
@@ -38,7 +37,19 @@ cd <your-project-folder>
 ### 2. Run the application
 
 ```
-docker-compose up --build
+cd task-manager
+
+* FRONTEND
+cd task-manager-frontend
+npm install
+npm run dev
+
+
+*BACKEND
+cd task-manager-backend
+npm install
+node index.js
+
 ```
 
 ---
@@ -50,19 +61,11 @@ docker-compose up --build
 
 ---
 
-## 🐳 Docker Setup
 
-* Separate containers for frontend and backend
-* Uses Docker Compose for multi-container setup
-* `.dockerignore` used to optimize build by excluding unnecessary files
+
+
 
 ---
-
-## ⚠️ Notes
-
-* Backend runs on port 3000
-* Frontend runs on port 5173
-* Make sure Docker is installed and running before starting
 
 ---
 

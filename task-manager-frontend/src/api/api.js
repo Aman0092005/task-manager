@@ -1,7 +1,8 @@
 
 
 
-const API_URL = "http://localhost:3000";
+// const API_URL = "http://localhost:3000";
+const API_URL = "http://172.20.10.7:3000";
 
 
 
@@ -26,10 +27,12 @@ export async function apiFetch(endpoint, method, body=null)
     if(res.status === 401)
     {
         sessionStorage.removeItem("token");
-        window.location.href("/");
+        window.location.href = "/";
         return;
     }
-    return res.json();
+    
+    const data = await res.json();
+    return data;
 }
 
 
@@ -47,5 +50,6 @@ export async function auth(endpoint, body)
         body: JSON.stringify(body) 
     });
 
-    return res.json();
+    const data = await res.json();
+    return data;
 }
