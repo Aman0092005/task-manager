@@ -18,13 +18,17 @@ const server = http.createServer(app);
 const PORT = process.env.PORT || 3000;
 
 
+// const pool = new Pool({
+//     user: 'postgres',
+//     host: 'localhost',
+//     database: 'task_manager',
+//     password: 'missionspace',
+//     port: 5432
+// });
+
 const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'task_manager',
-    password: 'missionspace',
-    port: 5432
-});
+    connectionString: process.env.DATABASE_URL
+})
 
 
 
