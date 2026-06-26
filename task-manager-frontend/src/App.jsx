@@ -76,7 +76,7 @@ function App()
       console.log(date);
 
       let data = await apiFetch("/tasks", "POST", {id:uniqueId, title: addTitle, date, completed:false});
-      console.log(data.problem);
+      // console.log(data.problem);
       if(!data.problem)
       {
         // Temporary 
