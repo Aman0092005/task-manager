@@ -71,9 +71,12 @@ function App()
 
       const token = sessionStorage.getItem("token");
       const uniqueId = Date.now().toString(36) + Math.random().toString(36).substring(2);
-      const date = `${new Date().getDate()}/${new Date().getMonth()+1}/${new Date().getFullYear()}`
+      // const date = `${new Date().getDate()}/${new Date().getMonth()+1}/${new Date().getFullYear()}`
+      const date = new Date().toLocaleDateString();
+      console.log(date);
 
       let data = await apiFetch("/tasks", "POST", {id:uniqueId, title: addTitle, date, completed:false});
+      console.log(data.problem);
       if(!data.problem)
       {
         // Temporary 
